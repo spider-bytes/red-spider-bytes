@@ -1,0 +1,44 @@
+{
+  "name": "@spider-bytes/red-client",
+  "version": "0.0.1",
+  "description": "",
+  "main": "src/main.ts",
+  "scripts": {
+    "lint": "eslint . --ext .js,.ts --max-warnings=0 --ignore-pattern=!.eslintrc.js",
+    "precommit": "lint-staged"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/spider-bytes/red-spider-bytes"
+  },
+  "keywords": [
+    "decentralized",
+    "database",
+    "web",
+    "decentralized database",
+    "decentralized web"
+  ],
+  "author": "https://github.com/spider-bytes",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/spider-bytes/red-spider-bytes/issues"
+  },
+  "dependencies": {
+    "@spider-bytes/red-spec": "file:../spec"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^2.17.0",
+    "@typescript-eslint/parser": "^2.17.0",
+    "eslint": "^6.8.0",
+    "eslint-import-resolver-typescript": "^2.0.0",
+    "eslint-plugin-import": "^2.20.0",
+    "eslint-plugin-json": "^2.0.1",
+    "lint-staged": "^10.0.2",
+    "typescript": "^3.7.5"
+  },
+  "lint-staged": {
+    "*.{js,ts}": [
+      "npm run lint"
+    ]
+  }
+}

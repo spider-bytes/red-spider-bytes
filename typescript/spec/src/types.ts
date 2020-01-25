@@ -1,4 +1,4 @@
-export interface MessagePayload {
+export interface IMessagePayload {
     groupName: string;
     tableName: string;
     column: string;
@@ -6,15 +6,15 @@ export interface MessagePayload {
     value: string;
 }
 
-export interface Message extends MessagePayload {
+export interface IMessage extends IMessagePayload {
     timestamp: string; // hybrid-logical clock
 }
 
-export interface DatabaseConnector {
+export interface IDatabaseConnector {
     setCredentials(credentials: string): Promise<void>;
     createDatabase(userId: string): Promise<string>;
-    getMessages(databaseId: DatabaseId): Promise<MessagePayload[]>;
-    storeMessages(databaseId: DatabaseId, messagePayloads: MessagePayload[]): Promise<MessagePayload[]>;
+    getMessages(databaseId: IDatabaseId): Promise<IMessagePayload[]>;
+    storeMessages(databaseId: IDatabaseId, messagePayloads: IMessagePayload[]): Promise<IMessagePayload[]>;
 }
 
-export type DatabaseId = string;
+export type IDatabaseId = string;
