@@ -29,13 +29,14 @@ export type IMessageCallback = (msg: IMessagePayload) => void;
 export interface IDatabaseConnector {
     setCredentials(credentials: string): Promise<void>;
     createDatabase(userId: string): Promise<string>;
-    useDatabase(databaseId: string, groupId: string): Promise<void>;
+    useDatabase(databaseId: string, groupId: string): Promise<IDatabaseDescription>;
 
-    sync(): Promise<void>;
-    listenForMessages(cb: IMessageCallback): Promise<void>;
-    storeMessages(messagePayloads: IMessagePayload[]): Promise<void>;
+    sync(databaseDescription: IDatabaseDescription): Promise<void>;
+    listenForMessages(databaseDescription: IDatabaseDescription, cb: IMessageCallback): Promise<void>;
+    storeMessages(databaseDescription: IDatabaseDescription, messagePayloads: IMessagePayload[]): Promise<void>;
 }
 
+export type IDatabaseDescription = any; //eslint-disable-line @typescript-eslint/no-explicit-any
 export type IDatabaseId = string;
 
 

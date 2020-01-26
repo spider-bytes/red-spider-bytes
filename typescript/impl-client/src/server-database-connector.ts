@@ -1,14 +1,11 @@
 import { IDatabaseConnector, IMessage, IMessageCallback } from '@spider-bytes/red-spec';
 import { Sync } from './sync';
-import { IMessagePayload } from '@spider-bytes/red-spec/src/types';
+import { IDatabaseDescription, IMessagePayload } from '@spider-bytes/red-spec/src/types';
 import { MessageUtils } from '@spider-bytes/red-spec/src/utils';
 import { IClock } from '@spider-bytes/red-spec/src/clock';
 import { Timestamp } from '@spider-bytes/red-spec/src/main';
 
 export class ServerDatabaseConnector implements IDatabaseConnector {
-
-    private syncInstance: Sync;
-    private messageCb: IMessageCallback = null;
 
     constructor(
         private readonly serverUrl: string,
@@ -30,30 +27,43 @@ export class ServerDatabaseConnector implements IDatabaseConnector {
         return 'DEMO_DATABASE:' + userId;
     }
 
-    public async useDatabase(databaseId: string, groupId: string) {
-        this.syncInstance = new Sync(
+    private getSyncInstance(databaseDescription: IDatabaseDescription): Sync {
+        return databaseDescription.sync;
+    }
+
+    private getMessageCb(databaseDescription: IDatabaseDescription): IMessageCallback {
+        return databaseDescription.messageCb;
+    }
+
+    public async useDatabase(databaseId: string, groupId: string): Promise<IDatabaseDescription> {
+        const databaseDescription: IDatabaseDescription = { sync: null };
+        databaseDescription.sync = new Sync(
             this.serverUrl,
             databaseId,
             groupId,
-            (msg: IMessage) => this.messageCb && this.messageCb(msg),
+            (msg: IMessage) => {
+                const messageCb: IMessageCallback = this.getMessageCb(databaseDescription);
+                messageCb && messageCb(msg);
+            },
         );
+        return databaseDescription;
     }
 
-    public async sync(): Promise<void> {
-        await this.syncInstance.sync();
+    public async sync(databaseDescription: IDatabaseDescription): Promise<void> {
+        await this.getSyncInstance(databaseDescription).sync();
     }
 
-    public async listenForMessages(messageCb: IMessageCallback): Promise<void> {
-        this.messageCb = messageCb;
+    public async listenForMessages(databaseDescription: IDatabaseDescription, messageCb: IMessageCallback): Promise<void> {
+        databaseDescription.messageCb = messageCb;
     }
 
-    public async storeMessages(messagePayloads: IMessagePayload[]): Promise<void> {
-        const clock: IClock = this.syncInstance.getClock();
+    public async storeMessages(databaseDescription: IDatabaseDescription, messagePayloads: IMessagePayload[]): Promise<void> {
+        const clock: IClock = this.getSyncInstance(databaseDescription).getClock();
 
         const messages: IMessage[] = messagePayloads
             .map((msg: IMessagePayload) => MessageUtils.payloadToMessage(msg, Timestamp.send(clock)));
 
-        await this.syncInstance.sendMessages(messages);
+        await this.getSyncInstance(databaseDescription).sendMessages(messages);
     }
 
 }

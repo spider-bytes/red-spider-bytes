@@ -6,6 +6,7 @@ export {
     IMessagePayload,
     IMessageCallback,
     IDatabaseConnector,
+    IDatabaseDescription,
 } from '@spider-bytes/red-spec';
 
 export {

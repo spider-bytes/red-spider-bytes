@@ -7,6 +7,7 @@ export {
     IMessagePayload,
     IMessageCallback,
     IDatabaseConnector,
+    IDatabaseDescription,
 } from './types';
 
 export {
