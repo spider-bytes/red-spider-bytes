@@ -2,7 +2,7 @@
   "name": "@spider-bytes/red-spec",
   "version": "0.0.1",
   "description": "SpiderBytes Red is a specification for standardizing storage solutions on the web. This specification is intended for client-side storage libraries (e.g. SpiderBytes Blue) to store database like types on a server.",
-  "main": "src/types.ts",
+  "main": "src/main.ts",
   "scripts": {
     "lint": "eslint . --ext .js,.ts --max-warnings=0 --ignore-pattern=!.eslintrc.js",
     "precommit": "lint-staged"
@@ -24,7 +24,12 @@
   "bugs": {
     "url": "https://github.com/spider-bytes/red-spider-bytes/issues"
   },
+  "dependencies": {
+    "murmurhash": "0.0.2",
+    "uuidv4": "^6.0.2"
+  },
   "devDependencies": {
+    "@types/murmurhash": "0.0.1",
     "@typescript-eslint/eslint-plugin": "^2.17.0",
     "@typescript-eslint/parser": "^2.17.0",
     "eslint": "^6.8.0",

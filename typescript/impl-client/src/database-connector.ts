@@ -1,5 +1,7 @@
 import { IDatabaseConnector, IMessagePayload } from '@spider-bytes/red-spec';
 
+declare const localStorage: any; // eslint-disable-line @typescript-eslint/no-explicit-any
+
 export class DatabaseConnector implements IDatabaseConnector {
 
     public async setCredentials(): Promise<void> {
