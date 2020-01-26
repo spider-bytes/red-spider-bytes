@@ -28,17 +28,24 @@ export interface IMessageEntity {
 
 const db: IDatabase = new sqlite3(__dirname + '/db.sqlite');
 const message: string[] = db.prepare(`SELECT name FROM sqlite_master WHERE type='table';`).all();
-if (message.length <= 0) {
-    console.log(`Executing 'init.sql'`);
-    const initScript: string = fs.readFileSync(__dirname + '/init.sql', { encoding: 'utf8' });
+
+function executeScript(filename: string) {
+    const initScript: string = fs.readFileSync(__dirname + '/' + filename, { encoding: 'utf8' });
     const stmtArr: string[] = initScript.split(';');
     stmtArr
+        .map((stmt: string) => stmt.replace(/\n/g, ' '))
         .filter((str: string) => str && str.length > 0)
-        .map((stmt: string) => stmt.replace(/\n/g, '') + ';')
+        .map((stmt: string) => stmt + ';')
         .forEach((stmt: string) => db.prepare(stmt).run());
+}
+
+if (message.length <= 0) {
+    console.log(`Executing 'init.sql'`);
+    executeScript('init.sql');
 } else {
     console.log(`Using existing database file`);
 }
+executeScript('replaceable.sql');
 
 const app: Application = express();
 app.use(cors());
