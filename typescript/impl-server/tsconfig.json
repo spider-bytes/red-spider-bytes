@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "rootDir": "src",
+    "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "noImplicitAny": true,
+    "downlevelIteration": true
+  },
+  "include": [
+    "src/"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}
