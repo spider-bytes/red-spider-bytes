@@ -60,7 +60,7 @@ export class Timestamp {
         return this.toString();
     }
 
-    toString() {
+    public toString() {
         return [
             new Date(this.millis()).toISOString(),
             (

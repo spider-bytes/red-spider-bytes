@@ -12,6 +12,10 @@ export interface IMerkle {
 
 export class Merkle {
 
+    private constructor() { // eslint-disable-line @typescript-eslint/no-empty-function
+    }
+
+
     public static getKeys(trie: IMerkle): string[] {
         return Object.keys(trie).filter((x: string) => x !== 'hash');
     }

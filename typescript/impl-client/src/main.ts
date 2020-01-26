@@ -1,10 +1,12 @@
 export {
     IMessage,
     IDatabaseId,
+    IMessageBody,
     IMessagePayload,
+    IMessageCallback,
     IDatabaseConnector,
 } from '@spider-bytes/red-spec';
 
 export {
-    DatabaseConnector,
-} from './database-connector';
+    LocalStorageDatabaseConnector,
+} from './localstorage-database-connector';

@@ -1,7 +1,9 @@
 export {
     IMessage,
     IDatabaseId,
+    IMessageBody,
     IMessagePayload,
+    IMessageCallback,
     IDatabaseConnector,
 } from './types';
 
@@ -23,3 +25,7 @@ export {
 export {
     makeClientId,
 } from './client';
+
+export {
+    MessageUtils,
+} from './utils';

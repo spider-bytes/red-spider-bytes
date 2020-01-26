@@ -13,6 +13,9 @@ export interface IClock {
 
 export class Clock {
 
+    private constructor() { // eslint-disable-line @typescript-eslint/no-empty-function
+    }
+
     public static makeClock(timestamp: Timestamp, merkle: IMerkle = {}): IClock {
         return { timestamp: MutableTimestamp.from(timestamp), merkle };
     }
