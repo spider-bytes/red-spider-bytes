@@ -10,7 +10,7 @@ async function getSingleProperty(name: string): Promise<string> {
     ) => {
         prompt.get([{
             name,
-            validator: /^[a-zA-Z0-9\-]*$/,
+            validator: /^[a-zA-Z0-9\-_]*$/,
             warning: `'${name}' must be only letters, numbers, or dashes`,
         }], function (err: Error, result: any) { //eslint-disable-line @typescript-eslint/no-explicit-any
             if (err) {
@@ -54,18 +54,20 @@ async function getColumnNames(): Promise<string[]> {
 
     const sql: string = `
 SELECT 
-  "pk", 
-  "updated_at", 
+  "database_id",
+  "row_id", 
+  MAX("updated_at") as "updated_at", 
   ${resultProjection}
 FROM (
   SELECT 
-    "database_id" as "pk", 
+    "database_id", 
+    "row" as "row_id", 
     "timestamp" as "updated_at",
     ${resultMapping} 
   FROM messages_last as m1
   WHERE "table_name" = '${tableName}'
 ) as m2
-GROUP BY pk;`.substring(1);
+GROUP BY "database_id", "row_id";`.substring(1);
     fs.writeFileSync(__dirname + '/debug.sql', sql);
 
 })();

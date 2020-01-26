@@ -1,2 +1,3 @@
 *.sqlite
 src/debug.sql
+src/*.debug.sql

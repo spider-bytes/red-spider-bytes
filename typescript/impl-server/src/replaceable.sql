@@ -1,4 +1,4 @@
-DROP VIEW messages_last;
+DROP VIEW IF EXISTS messages_last;
 CREATE VIEW messages_last
 AS
 SELECT m2.*,
