@@ -35,7 +35,7 @@ export class Sync {
     }
 
     async post(data: ISyncData): Promise<ISyncData> {
-        const res: Response = await fetch(this.serverUrl + '/sync', {
+        const res: Response = await fetch(this.serverUrl + '/' + this.databaseId + '/sync', {
             method: 'POST',
             body: JSON.stringify(data),
             headers: {

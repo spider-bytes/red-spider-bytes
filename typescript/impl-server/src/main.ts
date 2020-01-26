@@ -11,12 +11,15 @@ import sqlite3, { Database as IDatabase, RunResult, Statement } from 'better-sql
 import { IMerkle, IMessageBody, ISyncData, ISyncResponse, Merkle, Timestamp } from '@spider-bytes/red-spec';
 
 export interface IMerkleEntity {
+    database_id: string;
     group_id: string;
     merkle: string;
 }
 
 export interface IMessageEntity {
     timestamp: string;
+    database_id: string;
+    group_id: string;
     table_name: string;
     row: string;
     column: string;
@@ -77,10 +80,11 @@ function deserializeValue(value: string): any { //eslint-disable-line @typescrip
     throw new Error('Invalid type key for value: ' + value);
 }
 
-function getMerkle(groupId: string): IMerkle {
-    const rows: IMerkleEntity[] = queryAll('SELECT * FROM messages_merkles WHERE group_id = ?', [
-        groupId,
-    ]);
+function getMerkle(databaseId: string, groupId: string): IMerkle {
+    const rows: IMerkleEntity[] = queryAll(
+        'SELECT * FROM messages_merkles WHERE database_id = ? AND group_id = ?',
+        [databaseId, groupId],
+    );
 
     if (rows.length > 0) {
         return JSON.parse(rows[0].merkle);
@@ -91,8 +95,8 @@ function getMerkle(groupId: string): IMerkle {
     }
 }
 
-function addMessages(groupId: string, messages: IMessageBody[]): IMerkle {
-    let trie: IMerkle = getMerkle(groupId);
+function addMessages(databaseId: string, groupId: string, messages: IMessageBody[]): IMerkle {
+    let trie: IMerkle = getMerkle(databaseId, groupId);
 
     queryRun('BEGIN');
 
@@ -105,9 +109,10 @@ function addMessages(groupId: string, messages: IMessageBody[]): IMerkle {
             const timestamp: string = message.timestamp;
 
             const res: RunResult = queryRun(
-                    `INSERT OR IGNORE INTO messages (timestamp, group_id, table_name, row, column, value) VALUES
-           (?, ?, ?, ?, ?, ?) ON CONFLICT DO NOTHING`,
-                [timestamp, groupId, tableName, rowId, column, serializeValue(value)],
+                'INSERT OR IGNORE ' +
+                'INTO messages (timestamp, database_id, group_id, table_name, row, column, value) ' +
+                'VALUES (?, ?, ?, ?, ?, ?, ?) ON CONFLICT DO NOTHING',
+                [timestamp, databaseId, groupId, tableName, rowId, column, serializeValue(value)],
             );
 
             if (res.changes === 1) {
@@ -117,8 +122,8 @@ function addMessages(groupId: string, messages: IMessageBody[]): IMerkle {
         }
 
         queryRun(
-            'INSERT OR REPLACE INTO messages_merkles (group_id, merkle) VALUES (?, ?)',
-            [groupId, JSON.stringify(trie)],
+            'INSERT OR REPLACE INTO messages_merkles (database_id, group_id, merkle) VALUES (?, ?, ?)',
+            [databaseId, groupId, JSON.stringify(trie)],
         );
         queryRun('COMMIT');
     } catch (e) {
@@ -129,14 +134,16 @@ function addMessages(groupId: string, messages: IMessageBody[]): IMerkle {
     return trie;
 }
 
-app.post('/sync', (req: Request, res: Response) => {
+app.post('/:databaseId/sync', (req: Request, res: Response) => {
+    const databaseId: string = req.params.databaseId;
+
     const body: ISyncData = req.body;
     const groupId: string = body.groupId;
     const clientId: string = body.clientId;
     const messages: IMessageBody[] = body.messages;
     const clientMerkle: IMerkle = body.merkle;
 
-    const trie: IMerkle = addMessages(groupId, messages);
+    const trie: IMerkle = addMessages(databaseId, groupId, messages);
 
     let newMessages: IMessageBody[] = [];
     if (clientMerkle) {
@@ -144,8 +151,11 @@ app.post('/sync', (req: Request, res: Response) => {
         if (diffTime) {
             const timestamp: string = new Timestamp(diffTime, 0, '0').toString();
             const newMessageEntities: IMessageEntity[] = queryAll(
-                    `SELECT * FROM messages WHERE group_id = ? AND timestamp > ? AND timestamp NOT LIKE '%' || ? ORDER BY timestamp`,
-                [groupId, timestamp, clientId],
+                'SELECT * ' +
+                'FROM messages ' +
+                'WHERE database_id = ? AND group_id = ? AND timestamp > ? AND timestamp NOT LIKE \' % \' || ? ' +
+                'ORDER BY timestamp',
+                [databaseId, groupId, timestamp, clientId],
             );
             newMessages = newMessageEntities.map((msg: IMessageEntity) => {
                 const messageBody: IMessageBody = {

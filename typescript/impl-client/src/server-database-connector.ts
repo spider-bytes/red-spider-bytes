@@ -9,7 +9,6 @@ export class ServerDatabaseConnector implements IDatabaseConnector {
 
     private syncInstance: Sync;
     private messageCb: IMessageCallback = null;
-    private databaseId: string;
 
     constructor(
         private readonly serverUrl: string,
@@ -28,11 +27,10 @@ export class ServerDatabaseConnector implements IDatabaseConnector {
 
     public async createDatabase(userId: string): Promise<string> {
         // TODO create database in server
-        return 'DEMO_DATABASE/' + userId;
+        return 'DEMO_DATABASE:' + userId;
     }
 
     public async useDatabase(databaseId: string, groupId: string) {
-        this.databaseId = databaseId;
         this.syncInstance = new Sync(
             this.serverUrl,
             databaseId,

@@ -34,8 +34,8 @@ export class LocalStorageDatabaseConnector implements IDatabaseConnector {
 
     public async createDatabase(userId: string): Promise<string> {
         const databaseId: string = 'database.' + userId;
-        localStorage.setItem(databaseId + '/domainData', '[]');
-        localStorage.setItem(databaseId + '/accessList', '[]');
+        localStorage.setItem(databaseId + '.domainData', '[]');
+        localStorage.setItem(databaseId + '.accessList', '[]');
         return databaseId;
     }
 
@@ -45,7 +45,7 @@ export class LocalStorageDatabaseConnector implements IDatabaseConnector {
     }
 
     private getDatabaseGroupId(): string {
-        return this.databaseId + '/' + this.groupId;
+        return this.databaseId + '.' + this.groupId;
     }
 
     public async sync(): Promise<void> {
