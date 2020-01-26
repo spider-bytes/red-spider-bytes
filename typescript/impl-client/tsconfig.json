@@ -1,17 +1,13 @@
 {
   "compilerOptions": {
-    "target": "esnext",
-    "module": "esnext",
-    "strict": true,
-    "strictNullChecks": false,
-    "strictPropertyInitialization": false,
-    "importHelpers": true,
-    "moduleResolution": "node",
-    "experimentalDecorators": true,
-    "esModuleInterop": true,
+    "module": "commonjs",
+    "outDir": "./dist",
+    "target": "es5",
+    "declaration": true,
     "allowSyntheticDefaultImports": true,
-    "sourceMap": true,
-    "types": [],
+    "esModuleInterop": true,
+    "noImplicitAny": true,
+    "downlevelIteration": true,
     "lib": [
       "esnext",
       "scripthost",
@@ -19,8 +15,7 @@
     ]
   },
   "include": [
-    "src/**/*.ts",
-    "tests/**/*.ts"
+    "src/"
   ],
   "exclude": [
     "node_modules"

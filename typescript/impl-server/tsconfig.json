@@ -1,12 +1,17 @@
 {
   "compilerOptions": {
     "module": "commonjs",
-    "rootDir": "src",
-    "moduleResolution": "node",
+    "outDir": "./dist",
+    "target": "es5",
+    "declaration": true,
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "noImplicitAny": true,
-    "downlevelIteration": true
+    "downlevelIteration": true,
+    "lib": [
+      "esnext",
+      "scripthost"
+    ]
   },
   "include": [
     "src/"
