@@ -5,6 +5,7 @@
   "main": "src/main.ts",
   "scripts": {
     "start": "ts-node src/main.ts",
+    "generate-debug-sql": "ts-node src/generate-debug-sql.ts",
     "lint": "eslint . --ext .js,.ts --max-warnings=0 --ignore-pattern=!.eslintrc.js",
     "precommit": "lint-staged"
   },
@@ -44,6 +45,7 @@
     "eslint-plugin-import": "^2.20.0",
     "eslint-plugin-json": "^2.0.1",
     "lint-staged": "^10.0.2",
+    "prompt": "^1.0.0",
     "ts-node": "^8.6.2",
     "typescript": "^3.7.5"
   },
