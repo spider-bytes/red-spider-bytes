@@ -152,7 +152,7 @@ export class Sync {
                 );
             }
 
-            return this.sync([], diffTime);
+            this.sync([], diffTime);
         }
     }
 

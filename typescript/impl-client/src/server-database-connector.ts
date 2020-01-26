@@ -42,7 +42,7 @@ export class ServerDatabaseConnector implements IDatabaseConnector {
     }
 
     public async sync(): Promise<void> {
-        // no implementation because there are no new messages from other clients
+        await this.syncInstance.sync();
     }
 
     public async listenForMessages(messageCb: IMessageCallback): Promise<void> {

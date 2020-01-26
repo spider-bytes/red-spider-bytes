@@ -10,6 +10,18 @@ import * as bodyParser from 'body-parser';
 import sqlite3, { Database as IDatabase, RunResult, Statement } from 'better-sqlite3';
 import { IMerkle, IMessageBody, ISyncData, ISyncResponse, Merkle, Timestamp } from '@spider-bytes/red-spec';
 
+export interface IMerkleEntity {
+    group_id: string;
+    merkle: string;
+}
+
+export interface IMessageEntity {
+    timestamp: string;
+    table_name: string;
+    row: string;
+    column: string;
+    value: string;
+}
 
 const db: IDatabase = new sqlite3(__dirname + '/db.sqlite');
 const message: string[] = db.prepare(`SELECT name FROM sqlite_master WHERE type='table';`).all();
@@ -79,19 +91,6 @@ function getMerkle(groupId: string): IMerkle {
     }
 }
 
-export interface IMerkleEntity {
-    group_id: string;
-    merkle: string;
-}
-
-export interface IMessageEntity {
-    timestamp: string;
-    tableName: string;
-    rowId: string;
-    column: string;
-    value: string;
-}
-
 function addMessages(groupId: string, messages: IMessageBody[]): IMerkle {
     let trie: IMerkle = getMerkle(groupId);
 
@@ -150,10 +149,10 @@ app.post('/sync', (req: Request, res: Response) => {
             );
             newMessages = newMessageEntities.map((msg: IMessageEntity) => {
                 const messageBody: IMessageBody = {
-                    rowId: msg.rowId,
+                    rowId: msg.row,
                     column: msg.column,
                     timestamp: msg.timestamp,
-                    tableName: msg.tableName,
+                    tableName: msg.table_name,
                     value: deserializeValue(msg.value),
                 };
                 return messageBody;
