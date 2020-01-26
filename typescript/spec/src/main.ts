@@ -1,7 +1,9 @@
 export {
     IMessage,
+    ISyncData,
     IDatabaseId,
     IMessageBody,
+    ISyncResponse,
     IMessagePayload,
     IMessageCallback,
     IDatabaseConnector,
@@ -29,3 +31,6 @@ export {
 export {
     MessageUtils,
 } from './utils';
+
+import { uuid as uuidv4 } from 'uuidv4';
+export { uuidv4 };

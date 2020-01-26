@@ -8,7 +8,7 @@ import cors from 'cors';
 import express, { Application, Request, Response } from 'express';
 import * as bodyParser from 'body-parser';
 import sqlite3, { Database as IDatabase, RunResult, Statement } from 'better-sqlite3';
-import { IMerkle, Merkle, Timestamp } from '@spider-bytes/red-spec';
+import { IMerkle, IMessageBody, ISyncData, ISyncResponse, Merkle, Timestamp } from '@spider-bytes/red-spec';
 
 
 const db: IDatabase = new sqlite3(__dirname + '/db.sqlite');
@@ -79,14 +79,6 @@ function getMerkle(groupId: string): IMerkle {
     }
 }
 
-export interface IMessageBody {
-    tableName: string;
-    rowId: string;
-    column: string;
-    value: any; // eslint-disable-line @typescript-eslint/no-explicit-any
-    timestamp: string;
-}
-
 export interface IMerkleEntity {
     group_id: string;
     merkle: string;
@@ -94,9 +86,8 @@ export interface IMerkleEntity {
 
 export interface IMessageEntity {
     timestamp: string;
-    group_id: string;
-    table_name: string;
-    row_id: string;
+    tableName: string;
+    rowId: string;
     column: string;
     value: string;
 }
@@ -140,10 +131,11 @@ function addMessages(groupId: string, messages: IMessageBody[]): IMerkle {
 }
 
 app.post('/sync', (req: Request, res: Response) => {
-    const groupId: string = req.body.group_id;
-    const clientId: string = req.body.client_id;
-    const messages: IMessageBody[] = req.body.messages;
-    const clientMerkle: IMerkle = req.body.merkle;
+    const body: ISyncData = req.body;
+    const groupId: string = body.groupId;
+    const clientId: string = body.clientId;
+    const messages: IMessageBody[] = body.messages;
+    const clientMerkle: IMerkle = body.merkle;
 
     const trie: IMerkle = addMessages(groupId, messages);
 
@@ -158,10 +150,10 @@ app.post('/sync', (req: Request, res: Response) => {
             );
             newMessages = newMessageEntities.map((msg: IMessageEntity) => {
                 const messageBody: IMessageBody = {
-                    rowId: msg.row_id,
+                    rowId: msg.rowId,
                     column: msg.column,
                     timestamp: msg.timestamp,
-                    tableName: msg.table_name,
+                    tableName: msg.tableName,
                     value: deserializeValue(msg.value),
                 };
                 return messageBody;
@@ -169,12 +161,11 @@ app.post('/sync', (req: Request, res: Response) => {
         }
     }
 
-    res.send(
-        JSON.stringify({
-            status: 'ok',
-            data: { messages: newMessages, merkle: trie },
-        }),
-    );
+    const syncResponse: ISyncResponse = {
+        status: 'ok',
+        data: { messages: newMessages, merkle: trie },
+    };
+    res.send(JSON.stringify(syncResponse));
 });
 
 app.get('/ping', (req: Request, res: Response) => {

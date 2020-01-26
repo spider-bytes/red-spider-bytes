@@ -1,4 +1,5 @@
 export {
+    uuidv4,
     IMessage,
     IDatabaseId,
     IMessageBody,
@@ -10,3 +11,7 @@ export {
 export {
     LocalStorageDatabaseConnector,
 } from './localstorage-database-connector';
+
+export {
+    ServerDatabaseConnector,
+} from './server-database-connector';

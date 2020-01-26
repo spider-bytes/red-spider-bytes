@@ -1,4 +1,5 @@
 import { Timestamp } from './timestamp';
+import { IMerkle } from './merkle';
 
 export interface IMessagePayload {
     tableName: string;
@@ -36,3 +37,17 @@ export interface IDatabaseConnector {
 }
 
 export type IDatabaseId = string;
+
+
+export interface ISyncData {
+    groupId?: string;
+    clientId?: string;
+    messages: IMessageBody[];
+    merkle: IMerkle;
+}
+
+export interface ISyncResponse {
+    status: string;
+    reason?: string;
+    data: ISyncData;
+}

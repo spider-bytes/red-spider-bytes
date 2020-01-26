@@ -3,22 +3,9 @@
 * File was modified file to be TypeScript compatible
 * */
 
-import { Clock, IClock, IMerkle, makeClientId, Merkle, Timestamp } from '@spider-bytes/red-spec';
-import { IMessage, IMessageBody } from '@spider-bytes/red-spec/src/types';
+import { Clock, IClock, makeClientId, Merkle, Timestamp } from '@spider-bytes/red-spec';
+import { IMessage, IMessageBody, ISyncData, ISyncResponse } from '@spider-bytes/red-spec/src/types';
 import { MessageUtils } from '@spider-bytes/red-spec/src/utils';
-
-export interface IData {
-    groupId: string;
-    clientId: string;
-    messages: IMessageBody[];
-    merkle: IMerkle;
-}
-
-export interface IResponseData {
-    status: string;
-    reason: string;
-    data: IData;
-}
 
 export type IOnSyncFunction = () => void;
 export type IApplyMessageFunction = (msg: IMessage) => void;
@@ -47,15 +34,15 @@ export class Sync {
         this.syncEnabled = flag;
     }
 
-    async post(data: IData): Promise<IData> {
-        const res: Response = await fetch(this.serverUrl, {
+    async post(data: ISyncData): Promise<ISyncData> {
+        const res: Response = await fetch(this.serverUrl + '/sync', {
             method: 'POST',
             body: JSON.stringify(data),
             headers: {
                 'Content-Type': 'application/json',
             },
         });
-        const resData: IResponseData = await res.json();
+        const resData: ISyncResponse = await res.json();
 
         if (resData.status !== 'ok') {
             throw new Error('API error: ' + resData.reason);
@@ -138,7 +125,7 @@ export class Sync {
             messages = this._messages.filter((msg: IMessageBody) => msg.timestamp >= timestamp);
         }
 
-        let result: IData;
+        let result: ISyncData;
         try {
             result = await this.post({
                 groupId: this.groupId,
